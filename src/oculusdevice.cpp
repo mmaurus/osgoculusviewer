@@ -447,6 +447,30 @@ void OculusDevice::init()
 	ovr_SetInt(m_session, "PerfHudMode", (int)ovrPerfHud_Off);
 }
 
+void OculusDevice::cleanUp(osg::GraphicsContext* gc)
+{
+	const OSG_GLExtensions* fbo_ext = getGLExtensions(*(gc->getState()));
+
+	// Delete mirror texture
+	if (m_mirrorTexture.valid())
+	{
+		m_mirrorTexture->destroy(fbo_ext);
+	}
+
+	// Delete texture and depth buffers
+	for (int i = 0; i < 2; i++)
+	{
+		if (m_textureBuffer[i].valid())
+		{
+			m_textureBuffer[i]->destroy();
+		}
+	}
+
+	ovr_Destroy(m_session);
+	ovr_Shutdown();
+
+}
+
 bool OculusDevice::hmdPresent() const
 {
 	ovrSessionStatus status;
@@ -694,23 +718,6 @@ osg::GraphicsContext::Traits* OculusDevice::graphicsContextTraits() const
 /* Protected functions */
 OculusDevice::~OculusDevice()
 {
-	// Delete mirror texture
-	if (m_mirrorTexture.valid())
-	{
-		m_mirrorTexture->destroy();
-	}
-
-	// Delete texture and depth buffers
-	for (int i = 0; i < 2; i++)
-	{
-		if (m_textureBuffer[i].valid())
-		{
-			m_textureBuffer[i]->destroy();
-		}
-	}
-
-	ovr_Destroy(m_session);
-	ovr_Shutdown();
 }
 
 void OculusDevice::printHMDDebugInfo()
@@ -816,6 +823,12 @@ void OculusRealizeOperation::operator() (osg::GraphicsContext* gc)
 	}
 
 	m_realized = true;
+}
+
+void OculusCleanUpOperation::operator() (osg::GraphicsContext* gc)
+{
+	gc->makeCurrent();
+	m_device->cleanUp(gc);
 }
 
 void OculusSwapCallback::swapBuffersImplementation(osg::GraphicsContext* gc)

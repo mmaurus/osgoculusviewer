@@ -90,6 +90,10 @@ int main( int argc, char** argv )
 	osg::ref_ptr<OculusRealizeOperation> oculusRealizeOperation = new OculusRealizeOperation(oculusDevice);
 	viewer.setRealizeOperation(oculusRealizeOperation.get());
 
+	// Things to do when viewer is realized
+	osg::ref_ptr<OculusCleanUpOperation> oculusCleanUpOperation = new OculusCleanUpOperation(oculusDevice);
+	viewer.setCleanUpOperation(oculusCleanUpOperation.get());
+
 	osg::ref_ptr<OculusViewer> oculusViewer = new OculusViewer(&viewer, oculusDevice, oculusRealizeOperation);
 	oculusViewer->addChild(loadedModel.get());
 	viewer.setSceneData(oculusViewer.get());

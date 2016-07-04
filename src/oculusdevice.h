@@ -124,7 +124,7 @@ public:
 	OculusDevice(float nearClip, float farClip, const float pixelsPerDisplayPixel = 1.0f, const float worldUnitsPerMetre = 1.0f, const int samples = 0, unsigned int mirrorTextureWidth = 960);
 	void createRenderBuffers(osg::ref_ptr<osg::State> state);
 	void init();
-
+	void cleanUp(osg::GraphicsContext* gc);
 	bool hmdPresent() const;
 
 	unsigned int screenResolutionWidth() const;
@@ -220,6 +220,16 @@ protected:
 	bool m_realized;
 };
 
+
+class OculusCleanUpOperation : public osg::GraphicsOperation
+{
+public:
+	explicit OculusCleanUpOperation(osg::ref_ptr<OculusDevice> device) :
+		osg::GraphicsOperation("OculusRealizeOperation", false), m_device(device) {}
+	virtual void operator () (osg::GraphicsContext* gc);
+protected:
+	osg::observer_ptr<OculusDevice> m_device;
+};
 
 class OculusSwapCallback : public osg::GraphicsContext::SwapCallback
 {
