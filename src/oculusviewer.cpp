@@ -33,7 +33,6 @@ void OculusViewer::configure()
 	gc->setSwapCallback(swapCallback.get());
 
 	osg::ref_ptr<osg::Camera> camera = m_view->getCamera();
-	camera->setName("Main");
 	osg::Vec4 clearColor = camera->getClearColor();
 
 	// Create RTT cameras and attach textures
@@ -54,6 +53,20 @@ void OculusViewer::configure()
 					 m_device->viewMatrixRight(),
 					 true);
 	m_view->getSlave(1)._updateSlaveCallback = new OculusUpdateSlaveCallback(OculusUpdateSlaveCallback::RIGHT_CAMERA, m_device.get(), swapCallback.get());
+
+	//add main camera for displaying view to external user
+	osg::ref_ptr<osg::Camera> main_cam = new osg::Camera();
+	main_cam->setName("center_cam");
+	main_cam->setClearColor(clearColor);
+	main_cam->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	main_cam->setRenderOrder(osg::Camera::POST_RENDER);
+	main_cam->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
+	main_cam->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
+	main_cam->setViewport(camera->getViewport());
+	main_cam->setGraphicsContext(gc);
+
+	m_view->addSlave(main_cam, true);
+	m_view->getSlave(2)._updateSlaveCallback = new OculusUpdateSlaveCallback(OculusUpdateSlaveCallback::MAIN_CAMERA, m_device.get(), swapCallback.get());
 
 	// Use sky light instead of headlight to avoid light changes when head movements
 	m_view->setLightingMode(osg::View::SKY_LIGHT);

@@ -8,6 +8,8 @@ SET(TARGET_SRC
 	oculusdevice.cpp
 	oculuseventhandler.cpp
 	oculusupdateslavecallback.cpp
+	OculusMirrorTexture.cpp
+	OculusTextureBuffer.cpp
 )
 # Header files for library
 SET(TARGET_H
@@ -15,6 +17,9 @@ SET(TARGET_H
 	oculusdevice.h
 	oculuseventhandler.h
 	oculusupdateslavecallback.h
+	OculusMirrorTexture.h
+	OculusTextureBuffer.h
+	helpers.h
 )
 
 #####################################################################
@@ -27,8 +32,8 @@ ADD_LIBRARY(${TARGET_LIBRARYNAME} ${TARGET_SRC} ${TARGET_H})
 # Linker options
 #####################################################################
 
-	LIST(APPEND COMPILE_RELEASE_OPTIONS /MT)
-	LIST(APPEND COMPILE_DEBUG_OPTIONS /MTd)
+	LIST(APPEND COMPILE_RELEASE_OPTIONS /MD)
+	LIST(APPEND COMPILE_DEBUG_OPTIONS /MDd)
 
 TARGET_COMPILE_OPTIONS(${TARGET_LIBRARYNAME} PRIVATE 
 		$<$<CONFIG:Release>:${COMPILE_RELEASE_OPTIONS}>

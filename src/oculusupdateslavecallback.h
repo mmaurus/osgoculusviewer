@@ -18,7 +18,8 @@ struct OculusUpdateSlaveCallback : public osg::View::Slave::UpdateSlaveCallback
 	enum CameraType
 	{
 		LEFT_CAMERA,
-		RIGHT_CAMERA
+		RIGHT_CAMERA,
+		MAIN_CAMERA
 	};
 
 	OculusUpdateSlaveCallback(CameraType cameraType, OculusDevice* device, OculusSwapCallback* swapCallback) :
